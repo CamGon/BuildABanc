@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>BuildABanc</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {{content-for "head"}}
+
+    <link rel="stylesheet" href="{{rootURL}}assets/vendor.css">
+    <link rel="stylesheet" href="{{rootURL}}assets/build-abanc.css">
+
+    {{content-for "head-footer"}}
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script>
+      $(document).ready(function(){
+        $("#form").submit(function(){
+          var funds=parseFloat($("#funds").text())+
+                    parseFloat($("#depositAmount").val())-
+                    parseFloat($("#withdrawlAmount").val())+
+                    parseFloat($("#cashAdvance").val());
+          if(funds<0) {
+            $("#noFunds").show();
+            return false;
+          }
+          if(parseFloat($("#cashAdvance").val())!=0) funds=funds-10;
+          var advance=parseFloat($("#advance").text())+ parseFloat($("#cashAdvance").val());
+          var submissionNum=parseInt($('tbody > tr:last > td:first').text());
+          if(!isNaN(submissionNum)) submissionNum++;
+          else submissionNum=1;
+          $("#funds").text(funds.toFixed(2));
+          $("#advance").text(advance.toFixed(2));
+          $("tbody").append("<tr><td>"+submissionNum+
+                            "</td><td>"+$("#depositAmount").val()+
+                            "</td><td>"+$("#withdrawlAmount").val()+
+                            "</td><td>"+$("#cashAdvance").val()+
+                            "</td><td>"+funds.toFixed(2)+"</td></tr>");
+          $("#success").show();
+        });
+        $("#accountBtn").click(function(){
+          $("#accountDetails").toggle();
+        });
+        $("#historyBtn").click(function(){
+          $("#history").toggle();
+        });
+      });
+    </script>
+
+  </head>
+  <body>
+    <div class="container">
+      <div class="header clearfix" align="center">
+        <h2 class="text-muted">MyBanc</h2>
+      </div>
+      <hr>
+
+      <div class="jumbotron">
+        <p class="lead">Welcome to Clearbanc! Please complete the fields below and we will update your account appropriately:</p>
+        <form id="form" method=post onsubmit="return false">
+          <p>
+            Amount to deposit: $ <input id="depositAmount" type="number" min="0.00" max="10000.00" step="0.01" value="0" required="required">
+          </p>
+          <p>
+            Amount to withdraw: $ <input id="withdrawlAmount" type="number" min="0.00" max="10000.00" step="0.01" value="0" required="required">
+          </p>
+          <p>
+            Amount on cash advance ($10 fee per advance): $ <input id="cashAdvance" type="number" min="0.00" max="10000.00" step="10" value="0" required="required">
+          </p>
+          <p align="center">
+            <button id="submit" type="submit" class="btn btn-default">Submit Changes</button>
+            <button id="accountBtn" type="button" class="btn btn-default">View Account Details</button>
+            <button id= "historyBtn" type="button" class="btn btn-default">View Transaction History</button>
+          </p>
+        </form>
+        <div id="success" class="alert alert-success alert-dismissable" style="display:none">
+          <span class="close" onclick="$('#success').hide()" aria-label="close">&times;</span>
+          <strong>Success!</strong> Your account has been updated.
+        </div>
+        <div id="noFunds" class="alert alert-warning alert-dismissable" style="display:none">
+          <span class="close" onclick="$('#noFunds').hide()" aria-label="close">&times;</span>
+          <strong>Insufficient funds!</strong> Please ensure there is enough money in your account to at least match your withdrawl.
+        </div>
+      </div>
+
+      <div id="accountDetails" style="display:none">
+        <div class="page-header">
+          <h3 align="center">Account Details</h3>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Total Funds ($)</h3>
+          </div>
+          <div id="funds" class="panel-body">0</div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Total Amount Taken on Cash Advance ($)</h3>
+          </div>
+          <div id="advance" class="panel-body">0</div>
+        </div>
+      </div>
+
+      <div id="history" style="display:none">
+        <div class="page-header">
+          <h3 align="center">Transaction History</h3>
+        </div> 
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Submission #</th>
+              <th>Amount Deposited ($)</th>
+              <th>Amount Withdrawn ($)</th>
+              <th>Amount Taken On Cash Advance ($)</th>
+              <th>Account Total ($)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    {{content-for "body"}}
+
+    <script src="{{rootURL}}assets/vendor.js"></script>
+    <script src="{{rootURL}}assets/build-abanc.js"></script>
+
+    {{content-for "body-footer"}}
+  </body>
+</html>
